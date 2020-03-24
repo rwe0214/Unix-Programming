@@ -88,7 +88,7 @@ void dump_list(socket_info *head, char *proto, char *filter, int reg_fail)
 
 void dump_net_table(net_table *tab, int tcp_flag, int udp_flag, char *filter)
 {
-	int reg_fail = 1;
+    int reg_fail = 1;
     if (filter)
         reg_fail = !(regcomp(&regex, filter, 0) == 0);
     for (int i = 0; i < 4; i++) {
@@ -361,13 +361,23 @@ int main(int argc, char **argv)
             udp_flag = 1;
         }
     }
-    if (optind < argc)
-        filter = argv[optind];
+    if (optind < argc) {
+        int size = 0;
+        for (int i = optind; i < argc; i++)
+            size += (strlen(argv[i]) + 1);
+        filter = malloc(size * sizeof(char));
+        for (int i = optind; i < argc - 1; i++) {
+            filter = strcat(filter, argv[i]);
+            filter = strcat(filter, " ");
+        }
+        filter = strcat(filter, argv[argc - 1]);
+        printf("%s\n", filter);
+    }
 
     net_table *tab = malloc(sizeof(net_table));
     load_net_table(tab);
     netstate(tab);
     dump_net_table(tab, tcp_flag, udp_flag, filter);
-	free_net_table(tab);
+    free_net_table(tab);
     return 0;
 }
