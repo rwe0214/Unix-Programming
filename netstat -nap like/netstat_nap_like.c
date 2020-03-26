@@ -9,10 +9,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#define BUF_SIZE 1024
-#define MAX_NUM 500
 
-char buf[BUF_SIZE];
 regex_t regex;
 
 char *info_fmt[] = {"%*d%*c%s%s%*s%*s%*s%*s%*s%*s%d%*s%*s%*s%*s%*s%*s%*s",
@@ -33,6 +30,77 @@ typedef struct SOCKET_INFO {
 typedef struct NETSTATUS {
     socket_info *list[4];
 } net_table;
+
+socket_info *insert_socket_list(socket_info *head, socket_info *new);
+void free_list(socket_info *head);
+void free_net_table(net_table *tab);
+void dump_list(socket_info *head, char *proto, char *filter, int reg_fail);
+void dump_net_table(net_table *tab, int tcp_flag, int udp_flag, char *filter);
+DIR *opendir_or_fail(char *path);
+FILE *fopen_or_fail(char *path, char *mode);
+int hex_to_bin(char ch);
+int hex2bin(char *src, size_t count);
+void convert_ipv4(char *addr, size_t len);
+void convert_ipv6(char *addr, size_t len);
+void load_net_table(net_table *tab);
+socket_info *find_target_socket_info(socket_info *head, int inode_target);
+socket_info *find_target(net_table *tab, int inode_target);
+void netstate(net_table *tab);
+
+int main(int argc, char **argv)
+{
+    int c;
+    char *filter = NULL;
+    int tcp_flag = 1, udp_flag = 1;
+
+    while (1) {
+        int option_index = 0;
+        static struct option long_options[] = {{"tcp", no_argument, 0, 't'},
+                                               {"udp", no_argument, 0, 'u'},
+                                               {NULL, 0, 0, 0}};
+
+        c = getopt_long(argc, argv, "tu", long_options, &option_index);
+        if (c == -1)
+            break;
+        switch (c) {
+        case 't':
+            tcp_flag = 1;
+            udp_flag = 0;
+            break;
+        case 'u':
+            tcp_flag = 0;
+            udp_flag = 1;
+            break;
+            break;
+        case '?':
+            printf("unknown option\n");
+            tcp_flag = 0;
+            udp_flag = 0;
+            break;
+        default:
+            tcp_flag = 1;
+            udp_flag = 1;
+        }
+    }
+    if (optind < argc) {
+        int size = 0;
+        for (int i = optind; i < argc; i++)
+            size += (strlen(argv[i]) + 1);
+        filter = malloc(size * sizeof(char));
+        for (int i = optind; i < argc - 1; i++) {
+            filter = strcat(filter, argv[i]);
+            filter = strcat(filter, " ");
+        }
+        filter = strcat(filter, argv[argc - 1]);
+    }
+
+    net_table *tab = malloc(sizeof(net_table));
+    load_net_table(tab);
+    netstate(tab);
+    dump_net_table(tab, tcp_flag, udp_flag, filter);
+    free_net_table(tab);
+    return 0;
+}
 
 socket_info *insert_socket_list(socket_info *head, socket_info *new)
 {
@@ -324,60 +392,4 @@ void netstate(net_table *tab)
             }
         }
     }
-}
-
-int main(int argc, char **argv)
-{
-    int c;
-    char *filter = NULL;
-    int tcp_flag = 1, udp_flag = 1;
-
-    while (1) {
-        int option_index = 0;
-        static struct option long_options[] = {{"tcp", no_argument, 0, 't'},
-                                               {"udp", no_argument, 0, 'u'},
-                                               {NULL, 0, 0, 0}};
-
-        c = getopt_long(argc, argv, "tu", long_options, &option_index);
-        if (c == -1)
-            break;
-        switch (c) {
-        case 't':
-            tcp_flag = 1;
-            udp_flag = 0;
-            break;
-        case 'u':
-            tcp_flag = 0;
-            udp_flag = 1;
-            break;
-            break;
-        case '?':
-            printf("unknown option\n");
-            tcp_flag = 0;
-            udp_flag = 0;
-            break;
-        default:
-            tcp_flag = 1;
-            udp_flag = 1;
-        }
-    }
-    if (optind < argc) {
-        int size = 0;
-        for (int i = optind; i < argc; i++)
-            size += (strlen(argv[i]) + 1);
-        filter = malloc(size * sizeof(char));
-        for (int i = optind; i < argc - 1; i++) {
-            filter = strcat(filter, argv[i]);
-            filter = strcat(filter, " ");
-        }
-        filter = strcat(filter, argv[argc - 1]);
-        printf("%s\n", filter);
-    }
-
-    net_table *tab = malloc(sizeof(net_table));
-    load_net_table(tab);
-    netstate(tab);
-    dump_net_table(tab, tcp_flag, udp_flag, filter);
-    free_net_table(tab);
-    return 0;
 }
