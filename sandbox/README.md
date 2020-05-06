@@ -10,13 +10,24 @@ gcc -g -o sandbox sandbox.c -ldl
 
 ## How to Run
 ```shell
+$ ./sandbox
+no command given.
+
 $ ./sandbox -h
 usage: ./sandbox [-h] [-p sopath] [-d basedir] [--] cmd [cmd args ...]
 	-h: this help text
 	-p: set the path to sandbox.so, default = ./sandbox.so
 	-d: the base directory that is allowed to access, default = .
 	--: separate the arguments for sandbox and for the executed command
+
+$ ./sandbox -d / ls /
+addons	cfg   initrd.img      lib64	  mnt	     root  srv	var
+bin	dev   initrd.img.old  libx32	  opt	     run   sys	vmlinuz
+boot	etc   lib	      lost+found  platforms  sbin  tmp	vmlinuz.old
+cdrom	home  lib32	      media	  proc	     snap  usr
 ```
+
+
 
 ## The List of Monitored Function
 1. chdir 
