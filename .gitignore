@@ -1,5 +1,11 @@
 *.o
 a.out
+out/
+.out/
 
 # netstat_nap_like
 netstat_nap_like
+
+# sandbox
+sandbox/sandbox
+*.so
