@@ -13,8 +13,9 @@
 #define RED_BOLD "\x1b[;31;1m"
 #define GRN_BOLD "\x1b[;32;1m"
 #define RESET "\x1b[0;m"
+
 /*
- *	TODO:
+ *
  *	The list of monitored system call:
  *	*[v] chdir
  *	*[v] chmod
@@ -35,13 +36,13 @@
  *	*[v] unlink
  *
  *	The list of rejected system call:
- *	*[] execl
- *	*[] execle
- *	*[] execlp
- *	*[] execv
- *	*[] execve
- *	*[] execvp
- *	*[] system
+ *	*[v] execl
+ *	*[v] execle
+ *	*[v] execlp
+ *	*[v] execv
+ *	*[v] execve
+ *	*[v] execvp
+ *	*[v] system
  *
  */
 
@@ -53,7 +54,7 @@ int check_permission(const char *subdir_name)
     char ab_base[1024];
     char ab_subdir[1024];
 
-    getcwd(ab_base, 1024);
+    strncpy(ab_base, getenv("HOME"), sizeof(ab_base));
     realpath(my_name, ab_subdir);
 
     if (strncmp(ab_base, ab_subdir, strlen(ab_base)) == 0)

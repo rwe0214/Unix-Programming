@@ -9,10 +9,9 @@
 
 int main(int argc, char *argv[])
 {
-    char path[1024] = "./sandbox.so", base[1024] = ".", pwd[1024];
+    char path[1024] = "./sandbox.so", base[1024] = ".";
     int opt;
     int path_flag = 0, base_flag = 0, arg_flag = 0;
-    getcwd(pwd, (size_t) 1024);
 
     while ((opt = getopt(argc, argv, "p:d:h")) != -1) {
         switch (opt) {
@@ -25,13 +24,11 @@ int main(int argc, char *argv[])
             base_flag = 1;
             break;
         case 'h':
-            fprintf(
-                stderr,
-                "usage: %s [-h] [-p sopath] [-d basedir] [--] cmd [cmd args ...]\n",
-                argv[0]);
-            fprintf(
-                stderr,
-                "\t-h: this help text\n");
+            fprintf(stderr,
+                    "usage: %s [-h] [-p sopath] [-d basedir] [--] cmd [cmd "
+                    "args ...]\n",
+                    argv[0]);
+            fprintf(stderr, "\t-h: this help text\n");
             fprintf(
                 stderr,
                 "\t-p: set the path to sandbox.so, default = ./sandbox.so\n");
@@ -42,8 +39,8 @@ int main(int argc, char *argv[])
             fprintf(stderr,
                     "\t--: separate the arguments for sandbox and for the "
                     "executed command\n");
-			exit(0);
-		default:
+            exit(0);
+        default:
             exit(EXIT_FAILURE);
         }
     }
@@ -54,12 +51,14 @@ int main(int argc, char *argv[])
     else {
         /* use optind to process the system call typed by user */
         char sopath[1024];
+        char basepath[1024];
         realpath(path, sopath);
-        if (base_flag)
-            chdir(base);
+        realpath(base, basepath);
+        setenv("HOME", basepath, 1);
         setenv("LD_PRELOAD", sopath, 1);
         int status = execvp(argv[optind], argv + optind);
         unsetenv("LD_PRELOAD");
+        unsetenv("HOME");
     }
     return 0;
 }
