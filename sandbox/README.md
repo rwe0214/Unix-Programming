@@ -5,7 +5,7 @@
 ``` shell
 $ make
 gcc -g -fPIC -shared -o sandbox.so sandboxso.c -ldl
-gcc -g -o sandbox sandbox.c -ldl
+gcc -g -o sandbox sandbox.c
 ```
 
 ## How to Run
@@ -20,37 +20,47 @@ usage: ./sandbox [-h] [-p sopath] [-d basedir] [--] cmd [cmd args ...]
 	-d: the base directory that is allowed to access, default = .
 	--: separate the arguments for sandbox and for the executed command
 
-$ ./sandbox -d / ls /
+$ ./sandbox -- ls /
+[sandbox] __xstat: access to / is not allowed
+ls: 無法存取 '/': 拒絕不符權限的操作
+
+$ ./sandbox -d / -- ls /
 addons	cfg   initrd.img      lib64	  mnt	     root  srv	var
 bin	dev   initrd.img.old  libx32	  opt	     run   sys	vmlinuz
 boot	etc   lib	      lost+found  platforms  sbin  tmp	vmlinuz.old
 cdrom	home  lib32	      media	  proc	     snap  usr
 ```
 
+## Error Messages
+The return value of each rejected functions is `-1` or `NULL` depends on the return type of the rejected function.
 
+Besides, the `errno` of them are always set to `EACCES`.
 
-## The List of Monitored Function
-1. chdir 
-2. chmod 
-3. chown 
-4. creat 
-5. fopen 
-6. link 
-7. mkdir 
-8. open 
-9. openat 
-11. opendir 
-12. readlink 
-13. remove 
-14. rename 
-15. rmdir 
-16. stat 
-17. symlink 
-18. unlink
-19. execl 
-20. execle 
-21. execlp 
-22. execv 
-23. execve 
-24. execvp 
-25. system
+## The List of Monitored Functions
+1. `chdir`
+2. `chmod`
+3. `chown`
+4. `creat`
+5. `fopen`
+6. `link`
+7. `mkdir`
+8. `open`
+9. `openat`
+11. `opendir`
+12. `readlink`
+13. `remove`
+14. `rename`
+15. `rmdir`
+16. `stat`
+    * `__xstat` and `__xsata64`
+17. `symlink`
+18. `unlink`
+
+## The List of Rejected Functions
+1. `execl`
+2. `execle`
+3. `execlp`
+4. `execv`
+5. `execve`
+6. `execvp`
+7. `system`
