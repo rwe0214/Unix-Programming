@@ -34,7 +34,7 @@ cdrom	home  lib32	      media	  proc	     snap  usr
 ## Error Messages
 The return value of each rejected functions is `-1` or `NULL` depends on the return type of the rejected function.
 
-Besides, the `errno` of them are always set to `EACCES`.
+Besides, the function alway be rejected will set `errno` to `EACCES`.
 
 ## The List of Monitored Functions
 1. `chdir`

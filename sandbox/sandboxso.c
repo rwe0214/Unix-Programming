@@ -14,38 +14,7 @@
 #define GRN_BOLD "\x1b[;32;1m"
 #define RESET "\x1b[0;m"
 
-/*
- *
- *	The list of monitored system call:
- *	*[v] chdir
- *	*[v] chmod
- *	*[v] chown
- *	*[v] creat
- *	*[v] fopen
- *	*[v] link
- *	*[v] mkdir
- *	*[v] open
- *	*[v] openat
- *	*[v] opendir
- *	*[v] readlink
- *	*[v] remove
- *	*[v] rename
- *	*[v] rmdir
- *	*[v] stat
- *	*[v] symlink
- *	*[v] unlink
- *
- *	The list of rejected system call:
- *	*[v] execl
- *	*[v] execle
- *	*[v] execlp
- *	*[v] execv
- *	*[v] execve
- *	*[v] execvp
- *	*[v] system
- *
- */
-
+/*Check whether the request dir is the sub dir of base dir*/
 int check_permission(const char *subdir_name)
 {
     char my_name[1024];
@@ -327,44 +296,20 @@ MONITORED_FUNC(int, unlink, (const char *pathname))
         errno = EACCES;                                                   \
     })
 
-int execl(const char *path, const char *arg, ...)
-{
-    FORBID_MSG(execl, path);
-    return -1;
-}
+#define FORBID_FUNC(func_type, func_name, func_para, request_path) \
+    func_type func_name func_para                                  \
+    {                                                              \
+        FORBID_MSG(func_name, request_path);                       \
+        return -1;                                                 \
+    }
 
-int execle(const char *path, const char *arg, ...)
-{
-    FORBID_MSG(execle, path);
-    return -1;
-}
-
-int execlp(const char *path, const char *arg, ...)
-{
-    FORBID_MSG(execlp, path);
-    return -1;
-}
-
-int execv(const char *path, char *const argv[])
-{
-    FORBID_MSG(execv, path);
-    return -1;
-}
-
-int execve(const char *filename, char *const argv[], char *const envp[])
-{
-    FORBID_MSG(execve, filename);
-    return -1;
-}
-
-int execvp(const char *file, char *const argv[])
-{
-    FORBID_MSG(execvp, file);
-    return -1;
-}
-
-int system(const char *command)
-{
-    FORBID_MSG(system, command);
-    return -1;
-}
+FORBID_FUNC(int, execl, (const char *path, const char *arg, ...), path);
+FORBID_FUNC(int, execle, (const char *path, const char *arg, ...), path);
+FORBID_FUNC(int, execlp, (const char *path, const char *arg, ...), path);
+FORBID_FUNC(int, execv, (const char *path, char *const arg[]), path);
+FORBID_FUNC(int,
+            execve,
+            (const char *filename, char *const argv[], char *const envp[]),
+            filename);
+FORBID_FUNC(int, execvp, (const char *file, char *const argv[]), file);
+FORBID_FUNC(int, system, (const char *command), command);
