@@ -51,13 +51,13 @@ int check_permission(const char *subdir_name)
     char my_name[1024];
     strncpy(my_name, ((subdir_name) ? subdir_name : "."), sizeof(my_name));
 
-    char ab_base[1024];
-    char ab_subdir[1024];
+    char abs_base[1024];
+    char abs_subdir[1024];
 
-    strncpy(ab_base, getenv("HOME"), sizeof(ab_base));
-    realpath(my_name, ab_subdir);
+    strncpy(abs_base, getenv("BASE_DIR"), sizeof(abs_base));
+    realpath(my_name, abs_subdir);
 
-    if (strncmp(ab_base, ab_subdir, strlen(ab_base)) == 0)
+    if (strncmp(abs_base, abs_subdir, strlen(abs_base)) == 0)
         return 1;
     else
         return 0;
@@ -86,7 +86,6 @@ int check_permission(const char *subdir_name)
         fprintf(stderr,                                                       \
                 RED_BOLD "[sandbox] %s: access to %s is not allowed\n" RESET, \
                 #func_name, request_path);                                    \
-        errno = EACCES;                                                       \
     })
 
 MONITORED_FUNC(int, chdir, (const char *path))

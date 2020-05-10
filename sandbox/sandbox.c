@@ -54,11 +54,11 @@ int main(int argc, char *argv[])
         char basepath[1024];
         realpath(path, sopath);
         realpath(base, basepath);
-        setenv("HOME", basepath, 1);
+        setenv("BASE_DIR", basepath, 1);
         setenv("LD_PRELOAD", sopath, 1);
         int status = execvp(argv[optind], argv + optind);
         unsetenv("LD_PRELOAD");
-        unsetenv("HOME");
+        unsetenv("BASE_DIR");
     }
     return 0;
 }
