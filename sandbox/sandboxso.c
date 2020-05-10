@@ -83,7 +83,7 @@ int check_permission(const char *subdir_name)
         }                                                            \
     }
 
-#define MONITORED_FUNC_long(func_type, reject_ret, func_name, func_para, \
+#define MONITORED_FUNC_LONG(func_type, reject_ret, func_name, func_para, \
                             para_name)                                   \
     MONITORED_WRAP(func_type, func_name, func_para)                      \
     {                                                                    \
@@ -164,17 +164,17 @@ MONITORED_FUNC2(int,
                 (const char *request_path1, const char *request_path2),
                 (request_path1, request_path2));
 /*Function which has variable arguments*/
-MONITORED_FUNC_long(int,
+MONITORED_FUNC_LONG(int,
                     -1,
                     open,
                     (const char *request_path, int flags, ...),
                     (request_path, flags, args));
-MONITORED_FUNC_long(int,
+MONITORED_FUNC_LONG(int,
                     -1,
                     open64,
                     (const char *request_path, int flags, ...),
                     (request_path, flags, args));
-MONITORED_FUNC_long(int,
+MONITORED_FUNC_LONG(int,
                     -1,
                     openat,
                     (const char *request_path, int flags, ...),
