@@ -22,13 +22,27 @@ usage: ./sandbox [-h] [-p sopath] [-d basedir] [--] cmd [cmd args ...]
 
 $ ./sandbox -- ls /
 [sandbox] __xstat: access to / is not allowed
-ls: 無法存取 '/': 拒絕不符權限的操作
+ls: cannot access '/': permission denied
 
 $ ./sandbox -d / -- ls /
 addons	cfg   initrd.img      lib64	  mnt	     root  srv	var
 bin	dev   initrd.img.old  libx32	  opt	     run   sys	vmlinuz
 boot	etc   lib	      lost+found  platforms  sbin  tmp	vmlinuz.old
 cdrom	home  lib32	      media	  proc	     snap  usr
+
+$ ./sandbox -- ls -la / Makefile >log 2>&1
+$ cat log
+[sandbox] fopen: access to /proc/filesystems is not allowed
+[sandbox] fopen: access to /proc/mounts is not allowed
+[sandbox] fopen: access to /etc/passwd is not allowed
+[sandbox] fopen: access to /etc/group is not allowed
+[sandbox] fopen: access to /etc/passwd is not allowed
+[sandbox] fopen: access to /etc/group is not allowed
+[sandbox] opendir: access to / is not allowed
+-rw-rw-r--  1 1000 1000  435  5月 10 14:13 Makefile
+
+ls: cannot open directory '/'
+
 ```
 
 ## Error Messages
