@@ -71,10 +71,14 @@ int check_permission(const char *subdir_name)
     func_type func_name func_parameter
 
 
-#define ORIGIN_FUNC(func_name)                               \
-    ({                                                       \
-        if (orig_##func_name == NULL)                        \
-            orig_##func_name = dlsym(RTLD_NEXT, #func_name); \
+#define ORIGIN_FUNC(func_name)                                          \
+    ({                                                                  \
+        void *handle =                                                  \
+            dlopen("/lib/x86_64-linux-gnu/libc-2.27.so", RTLD_LAZY);    \
+        if (!handle)                                                    \
+            fprintf(stderr, RED_BOLD "[sandbox] dlopen error\n" RESET); \
+        else if (orig_##func_name == NULL)                              \
+            orig_##func_name = dlsym(handle, #func_name);               \
     })
 
 #define PRINT_ERR(func_name, request_path)                                    \
@@ -131,7 +135,9 @@ MONITORED_FUNC(int, creat, (const char *pathname, mode_t mode))
 
 MONITORED_FUNC(FILE *, fopen, (const char *pathname, const char *mode))
 {
-    if (check_permission(pathname)) {
+    if (check_permission(pathname) ||
+        strcmp(pathname, "/proc/filesystems") == 0 ||
+        strcmp(pathname, "/proc/mounts") == 0) {
         ORIGIN_FUNC(fopen);
         return orig_fopen(pathname, mode);
     } else {
@@ -289,6 +295,7 @@ MONITORED_FUNC(int,
         return -1;
     }
 }
+
 MONITORED_FUNC(int, symlink, (const char *target, const char *linkpath))
 {
     if (check_permission(target) && check_permission(linkpath)) {

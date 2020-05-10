@@ -18,7 +18,7 @@ LIB = sandbox.so
 
 all:
 	$(cc) $(CFLAGS) $(SFLAGS) -o $(LIB) $(LIB_SRC) $(LDFLAGS)
-	$(cc) $(CFLAGS) -o $(EXE) $(SRC) $(LDFLAGS)
+	$(cc) $(CFLAGS) -o $(EXE) $(SRC)
 
 .PHONY: all format clean run debug
 
