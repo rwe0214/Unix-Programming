@@ -17,16 +17,19 @@
 FILE *fd_err = NULL;
 
 /*set the error message is independent to the stderr, stdout*/
-void set_errfd(){
-	void *handle = dlopen("/lib/x86_64-linux-gnu/libc-2.27.so", RTLD_LAZY);
-	if(!handle)
-		printf("ERROR\n");
-	FILE *(*orig_fopen)(const char *request_path, const char *mode) = dlsym(handle, "fopen");
-	fd_err = orig_fopen("/dev/tty", "w");
+void set_errfd()
+{
+    void *handle = dlopen("/lib/x86_64-linux-gnu/libc-2.27.so", RTLD_LAZY);
+    if (!handle)
+        printf("ERROR\n");
+    FILE *(*orig_fopen)(const char *request_path, const char *mode) =
+        dlsym(handle, "fopen");
+    fd_err = orig_fopen("/dev/tty", "w");
 }
 
-void clr_errfd(){
-	fclose(fd_err);
+void clr_errfd()
+{
+    fclose(fd_err);
 }
 
 /*Check whether the requested directory is sub directory of base directory*/
@@ -56,24 +59,24 @@ int check_permission(const char *subdir_name)
 
 #define ORIGIN_FUNC(func_name, func_para)                               \
     ({                                                                  \
-		set_errfd();\
+        set_errfd();                                                    \
         void *handle =                                                  \
             dlopen("/lib/x86_64-linux-gnu/libc-2.27.so", RTLD_LAZY);    \
-        if (!handle){                                                    \
+        if (!handle) {                                                  \
             fprintf(fd_err, RED_BOLD "[sandbox] dlopen error\n" RESET); \
-			clr_errfd();}\
-        else if (orig_##func_name == NULL)                              \
+            clr_errfd();                                                \
+        } else if (orig_##func_name == NULL)                            \
             orig_##func_name = dlsym(handle, #func_name);               \
         return orig_##func_name func_para;                              \
     })
 
 #define PRINT_ERR(func_name, request_path)                                    \
     ({                                                                        \
-		set_errfd();\
+        set_errfd();                                                          \
         fprintf(fd_err,                                                       \
                 RED_BOLD "[sandbox] %s: access to %s is not allowed\n" RESET, \
                 #func_name, request_path);                                    \
-		clr_errfd();\
+        clr_errfd();                                                          \
     })
 
 #define MONITORED_FUNC(func_type, reject_ret, func_name, func_para, para_name) \
@@ -201,11 +204,11 @@ MONITORED_FUNC_LONG(int,
 
 #define FORBID_MSG(func_name, request_process)                            \
     ({                                                                    \
-		set_errfd(); \
+        set_errfd();                                                      \
         fprintf(fd_err, RED_BOLD "[sandbox] %s(%s): not allowed\n" RESET, \
                 #func_name, request_process);                             \
         errno = EACCES;                                                   \
-		clr_errfd();\
+        clr_errfd();                                                      \
     })
 
 #define FORBID_FUNC(func_type, func_name, func_para, request_path) \
