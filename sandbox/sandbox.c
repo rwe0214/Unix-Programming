@@ -23,12 +23,12 @@ int main(int argc, char *argv[])
             strncpy(base, optarg, sizeof(base));
             base_flag = 1;
             break;
-        case 'h':
+        default:
             fprintf(stderr,
                     "usage: %s [-h] [-p sopath] [-d basedir] [--] cmd [cmd "
                     "args ...]\n",
                     argv[0]);
-            fprintf(stderr, "\t-h: this help text\n");
+			fprintf(stderr, "\t-h: this help text\n");
             fprintf(
                 stderr,
                 "\t-p: set the path to sandbox.so, default = ./sandbox.so\n");
@@ -39,8 +39,6 @@ int main(int argc, char *argv[])
             fprintf(stderr,
                     "\t--: separate the arguments for sandbox and for the "
                     "executed command\n");
-            exit(0);
-        default:
             exit(EXIT_FAILURE);
         }
     }
