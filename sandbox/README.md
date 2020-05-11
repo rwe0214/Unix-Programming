@@ -30,8 +30,7 @@ bin	dev   initrd.img.old  libx32	  opt	     run   sys	vmlinuz
 boot	etc   lib	      lost+found  platforms  sbin  tmp	vmlinuz.old
 cdrom	home  lib32	      media	  proc	     snap  usr
 
-$ ./sandbox -- ls -la / Makefile >log 2>&1
-$ cat log
+$ ./sandbox -- ls -la / Makefile > /dev/null
 [sandbox] fopen: access to /proc/filesystems is not allowed
 [sandbox] fopen: access to /proc/mounts is not allowed
 [sandbox] fopen: access to /etc/passwd is not allowed
@@ -39,10 +38,16 @@ $ cat log
 [sandbox] fopen: access to /etc/passwd is not allowed
 [sandbox] fopen: access to /etc/group is not allowed
 [sandbox] opendir: access to / is not allowed
--rw-rw-r--  1 1000 1000  435  5月 10 14:13 Makefile
-
 ls: cannot open directory '/'
 
+$ ./sandbox -- ls -la / Makefile > /dev/null 2>&1
+[sandbox] fopen: access to /proc/filesystems is not allowed
+[sandbox] fopen: access to /proc/mounts is not allowed
+[sandbox] fopen: access to /etc/passwd is not allowed
+[sandbox] fopen: access to /etc/group is not allowed
+[sandbox] fopen: access to /etc/passwd is not allowed
+[sandbox] fopen: access to /etc/group is not allowed
+[sandbox] opendir: access to / is not allowed
 ```
 
 ## Error Messages
