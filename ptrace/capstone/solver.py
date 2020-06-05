@@ -31,7 +31,7 @@ for i in range(10):
 	#revise output form
 	ans = xxx(asm)
 	conn.sendline(ans)
+	print(conn.recvline(keepends=False).decode('utf-8'))
 
-print(conn.recvline(keepends=False).decode('utf-8'))
 print(conn.recvline(keepends=False).decode('utf-8'))
 conn.close()
