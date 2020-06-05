@@ -20,6 +20,9 @@ context.clear()
 context.arch = 'x86_64'
 
 for i in range(10):
+	if conn.can_recv(timeout=1) == False:
+		print('Something went wrong...')
+		exit(0)
 	print(conn.recvuntil(b'> ').decode('utf-8'), end='')
 	quiz = conn.recvline(keepends=False)
 	print(quiz.decode('utf-8'))
