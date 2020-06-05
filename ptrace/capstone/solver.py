@@ -15,7 +15,7 @@ def xxx(s):
 		ans += '{:02x}'.format(int(ord(c)))
 	return ans
 
-conn= remote('aup.zoolab.org', 2530)
+conn = remote('aup.zoolab.org', 2530)
 
 for i in range(10):
 	print(conn.recvuntil(b'> ').decode('utf-8'), end='')
@@ -30,8 +30,8 @@ for i in range(10):
 
 	#revise output form
 	ans = xxx(asm)
-	print('ans: ' + ans)
-
 	conn.sendline(ans)
 
-conn.interactive()
+print(conn.recvline(keepends=False).decode('utf-8'))
+print(conn.recvline(keepends=False).decode('utf-8'))
+conn.close()
