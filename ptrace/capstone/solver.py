@@ -16,6 +16,8 @@ def xxx(s):
 	return ans
 
 conn = remote('aup.zoolab.org', 2530)
+context.clear()
+context.arch = 'x86_64'
 
 for i in range(10):
 	print(conn.recvuntil(b'> ').decode('utf-8'), end='')
@@ -25,7 +27,6 @@ for i in range(10):
 	b_quiz = b.a2b_hex(quiz)
 
 	#disasm
-	context.arch = 'x86_64'
 	asm = disasm(b_quiz, byte=0, offset=0)
 
 	#revise output form
