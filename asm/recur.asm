@@ -1,3 +1,14 @@
+; recur: implement a recursive function
+
+;    r(n) = 0, if n <= 0
+;         = 1, if n == 1
+;         = 2*r(n-1) + 3*r(n-2), otherwise
+   
+;    please call r(19) and store the result in RAX
+; ======
+; ======
+; Enter your codes: (type 'done:' when done)
+
 	call  r
 	jmp   EXIT
 
