@@ -42,8 +42,7 @@ int main(int argc, char *argv[])
 
             unsigned long code = ptrace(PTRACE_PEEKTEXT, child, trap_addr, 0);
             code = (code & 0xffffffffffffff00) | opcode;
-            if (ptrace(PTRACE_POKETEXT, child, trap_addr,
-                       ((code & 0xffffffffffffff00) | opcode)) != 0)
+            if (ptrace(PTRACE_POKETEXT, child, trap_addr, code) != 0)
                 perror("ptrace(POKETEXT)");
             regs.rip = trap_addr;
             if (ptrace(PTRACE_SETREGS, child, 0, &regs) != 0)
